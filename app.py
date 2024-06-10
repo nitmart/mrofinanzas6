@@ -11,7 +11,7 @@ import os
 
 # Set event loop policy to ProactorEventLoop on Windows
 if os.name == 'nt':
-    asyncio.set_event_loop(asyncio.ProactorEventLoop())
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
 alfa_mio = 'A05709'
 clave = 'Luis2020'
@@ -181,8 +181,7 @@ st.title("Mexicana MRO Financial Metrics")
 
 if st.button("Run Data Extraction"):
     st.write("Running data extraction, please wait...")
-    loop = asyncio.ProactorEventLoop()
-    asyncio.set_event_loop(loop)
+    loop = asyncio.get_event_loop()
     tabla1 = loop.run_until_complete(main())
 
     tabla1 = tabla1[tabla1['Tailnumber'] != 'TM AEROLINEAS SHOP']
@@ -193,5 +192,3 @@ if st.button("Run Data Extraction"):
     st.write(" General Status  ")
     styled_table = final_table.style.applymap(color_status, subset=['Status'])
     st.dataframe(styled_table)
-
-   
