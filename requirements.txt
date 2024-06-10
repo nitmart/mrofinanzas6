@@ -1,11 +1,11 @@
-streamlit
-pandas
-nest-asyncio
-playwright
-beautifulsoup4
-matplotlib
-seaborn
-xlrd
-openpyxl
-xlsxwriter
-playwright install
+streamlit==1.10.0
+pandas==1.3.3
+nest_asyncio==1.5.1
+playwright==1.18.0
+beautifulsoup4==4.9.3
+matplotlib==3.4.3
+seaborn==0.11.2
+xlrd==2.0.1
+openpyxl==3.0.9
+xlsxwriter==1.4.4
+
