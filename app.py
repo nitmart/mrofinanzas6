@@ -13,8 +13,8 @@ import io
 import os
 
 # Set event loop policy to ProactorEventLoop on Windows
-#if os.name == 'nt':
-    #asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+if os.name == 'nt':
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
 
 alfa_mio = 'A05709'
