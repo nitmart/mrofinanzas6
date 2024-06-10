@@ -6,16 +6,12 @@ from playwright.async_api import async_playwright
 from bs4 import BeautifulSoup
 import matplotlib.pyplot as plt
 import seaborn as sns
-import datetime
-#import io
-
 import io
 import os
 
 # Set event loop policy to ProactorEventLoop on Windows
 if os.name == 'nt':
-    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
-
+    asyncio.set_event_loop(asyncio.ProactorEventLoop())
 
 alfa_mio = 'A05709'
 clave = 'Luis2020'
@@ -185,7 +181,9 @@ st.title("Mexicana MRO Financial Metrics")
 
 if st.button("Run Data Extraction"):
     st.write("Running data extraction, please wait...")
-    tabla1 = asyncio.run(main())
+    loop = asyncio.ProactorEventLoop()
+    asyncio.set_event_loop(loop)
+    tabla1 = loop.run_until_complete(main())
 
     tabla1 = tabla1[tabla1['Tailnumber'] != 'TM AEROLINEAS SHOP']
     tabla1.loc[:, 'Airline'] = tabla1['Tailnumber'].apply(asignar_aerolinea)
@@ -196,47 +194,4 @@ if st.button("Run Data Extraction"):
     styled_table = final_table.style.applymap(color_status, subset=['Status'])
     st.dataframe(styled_table)
 
-    st.success("Data extraction completed!")
-    df_tab=tabla1
-
-    losing_df = df_tab[df_tab['Status'] == 'PERDIENDO']
-    winning_df = df_tab[df_tab['Status'] == 'GANANDO']
-
-    sns.set_style("whitegrid")
-
-    st.write("## Aircraft Status Analysis")
-
-    loss_threshold = st.slider("Loss Threshold", min_value=0, max_value=100000, step=1000, value=10)
-    gain_threshold = st.slider("Gain Threshold", min_value=0, max_value=100000, step=1000, value=10)
-
-    fig, ax = plt.subplots(figsize=(12, 6))
-
-    if not losing_df.empty:
-        sns.barplot(x='Tailnumber', y='Dolares', data=losing_df[losing_df['Dolares'] < -loss_threshold],
-                color='red', ax=ax, label='Loss')
-    if not winning_df.empty:
-        sns.barplot(x='Tailnumber', y='Dolares', data=winning_df[winning_df['Dolares'] > gain_threshold],
-                color='green', ax=ax, label='Gain')
-
-    ax.set_xlabel('Tail Number', fontsize=12)
-    ax.set_ylabel('Amount (Dollars)', fontsize=12)
-    ax.set_title('Financial Status of Aircraft', fontsize=14)
-    ax.legend()
-
-    plt.xticks(rotation=45)
-    plt.grid(True, which='both', linestyle='--', linewidth=0.5)
-
-    st.pyplot(fig)
-
-    st.header('Summary Statistics')
-    st.write(df_tab['Dolares'].describe())
-
-    # Add download button for final_table
-    st.write("## Download Data")
-    output = io.BytesIO()
-    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-        final_table.to_excel(writer, index=False, sheet_name='Sheet1')
-    output.seek(0)
-
-    st.download_button(label="Download Excel file", data=output, file_name="final_table.xlsx", mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-
+   
