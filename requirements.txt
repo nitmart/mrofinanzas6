@@ -8,3 +8,4 @@ seaborn
 xlrd
 openpyxl
 xlsxwriter
+playwright install
